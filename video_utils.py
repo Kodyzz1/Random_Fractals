@@ -1,3 +1,4 @@
+# video_utils.py
 import ffmpeg
 import logging
 
@@ -15,12 +16,21 @@ def create_video(input_pattern: str, output_filename: str, framerate: int = 30, 
     """
     logging.info(f"Starting video creation: {output_filename}, FPS: {framerate}, CRF: {crf}, PixFmt: {pix_fmt}")
     try:
-        (
-            ffmpeg
-            .input(input_pattern, framerate=framerate)
-            .output(output_filename, overwrite_output=overwrite, crf=crf, pix_fmt=pix_fmt)
-            .run(quiet=True)
-        )
+        # Use -y flag for overwrite
+        if overwrite:
+            (
+                ffmpeg
+                .input(input_pattern, framerate=framerate)
+                .output(output_filename, crf=crf, pix_fmt=pix_fmt, y=None)  # -y flag
+                .run(quiet=True)
+            )
+        else:
+             (
+                ffmpeg
+                .input(input_pattern, framerate=framerate)
+                .output(output_filename, crf=crf, pix_fmt=pix_fmt)  # no -y flag
+                .run(quiet=True)
+            )
         logging.info(f"Video created: {output_filename}")
     except ffmpeg.Error as e:
         logging.error(f"ffmpeg error: {e.stderr.decode()}")
