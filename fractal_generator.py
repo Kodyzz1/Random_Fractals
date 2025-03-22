@@ -1,6 +1,4 @@
-# fractal_generator.py
-
-import svg_renderer
+import image_renderer  # Import the new image renderer
 import fractal_math
 import time
 import argparse
@@ -9,19 +7,22 @@ import logging
 import os
 import cupy as cp
 
-def generate_fractal_video_gpu(filename, total_frames, width=800, height=600, center_x=-0.5, center_y=0.0, zoom_speed=0.05, max_iter=200, fps=24, fractal_type="mandelbrot", color_map="grayscale", noise_scale=5.0, noise_strength=0.1, noise_octaves=6, noise_persistence=0.5, noise_lacunarity=2.0):
-    """Generates a fractal video as a sequence of SVG frames and encodes them into a video (frame-by-frame processing)."""
+def generate_fractal_video_gpu(filename, total_frames, width=800, height=600, center_x=-0.5, center_y=0.0, zoom_speed=0.05, max_iter=200, fps=24, fractal_type="mandelbrot", color_map="grayscale", noise_scale=5.0, noise_strength=0.1, noise_octaves=6, noise_persistence=0.5, noise_lacunarity=2.0, render_delay=0.0):
+    """Generates a fractal video as a sequence of PNG frames and encodes them into a video."""
 
     logging.info(f"Generating fractal video: {filename}")
-    logging.info(f"Frames: {total_frames}, Width: {width}, Height: {height}, Center: ({center_x}, {center_y}), Zoom Speed: {zoom_speed}, Max Iterations: {max_iter}, FPS: {fps}, Fractal Type: {fractal_type}, Color Map: {color_map}, Noise Scale: {noise_scale}, Noise Strength: {noise_strength}, Noise Octaves: {noise_octaves}, Noise Persistence: {noise_persistence}, Noise Lacunarity: {noise_lacunarity}")
+    logging.info(f"Frames: {total_frames}, Width: {width}, Height: {height}, Center: ({center_x}, {center_y}), Zoom Speed: {zoom_speed}, Max Iterations: {max_iter}, FPS: {fps}, Fractal Type: {fractal_type}, Color Map: {color_map}, Noise Scale: {noise_scale}, Noise Strength: {noise_strength}, Noise Octaves: {noise_octaves}, Noise Persistence: {noise_persistence}, Noise Lacunarity: {noise_lacunarity}, Render Delay: {render_delay}")
 
     try:
         start_time = time.time()
         for frame_num in range(total_frames):
             zoom = 1.0 + frame_num * zoom_speed
-            frame_filename = f"frame_{frame_num:03d}.svg"
+            frame_filename = f"frame_{frame_num:04d}.png"  # Use PNG
 
-            svg_renderer.render_fractal_frame_gpu(frame_filename, width, height, center_x, center_y, zoom, max_iter, fractal_type, color_map, noise_scale, noise_strength, noise_octaves, noise_persistence, noise_lacunarity)
+            image_array_gpu = image_renderer.render_fractal_frame_to_png(frame_filename, width, height, center_x, center_y, zoom, max_iter, fractal_type, color_map, noise_scale, noise_strength, noise_octaves, noise_persistence, noise_lacunarity)
+
+            del image_array_gpu #delete from gpu memory
+            cp._default_memory_pool.free_all_blocks()
 
             percentage = (frame_num + 1) / total_frames * 100
             print(f"Frame Progress: {percentage:.2f}%", end="\r")
@@ -29,42 +30,23 @@ def generate_fractal_video_gpu(filename, total_frames, width=800, height=600, ce
             remaining_time = (elapsed_time / (frame_num + 1)) * (total_frames - frame_num - 1)
             logging.info(f"Frame {frame_num + 1}/{total_frames} rendered. Estimated time remaining: {remaining_time:.2f} seconds")
 
-            # Encode frame immediately after generating it
-            temp_filename = f"temp_frame_{frame_num:03d}.mp4"
-            (
-                ffmpeg
-                .input(frame_filename)
-                .output(temp_filename, crf=20, pix_fmt='yuv420p', framerate=fps)
-                .run(quiet=True, overwrite_output=True)
-            )
+            time.sleep(render_delay)  # Delay for cooling
 
-            os.remove(frame_filename)  # Delete the SVG frame after encoding
-
-        print("\nFractal video generation complete! Concatenating...")
-        logging.info("Concatenating video frames...")
-
-        # Concatenate encoded frames into the final video
-        input_files = [f"temp_frame_{frame_num:03d}.mp4" for frame_num in range(total_frames)]
-        input_list = '\n'.join([f"file '{f}'" for f in input_files])
-
-        with open('input_list.txt', 'w') as f:
-            f.write(input_list)
-
+        # Encode directly from the PNG sequence
         (
             ffmpeg
-            .input('input_list.txt', format='concat', safe=0)
-            .output(filename, c='copy')
+            .input('frame_%04d.png', format='image2', framerate=fps)
+            .output(filename, crf=20, pix_fmt='yuv420p')
             .run(quiet=True, overwrite_output=True)
         )
+        logging.info(f"Video created: {filename}")
 
-        os.remove('input_list.txt')
-
-        # Clean up temporary encoded frames
+        # Clean up PNG frames
         for frame_num in range(total_frames):
-            os.remove(f"temp_frame_{frame_num:03d}.mp4")
-        logging.info("Temporary encoded frames deleted.")
+            os.remove(f"frame_{frame_num:04d}.png")
+        logging.info("Temporary PNG frames deleted.")
 
-        print(f"Video saved as {filename}")
+        print(f"\nVideo saved as {filename}")
 
     except Exception as e:
         logging.error(f"An error occurred: {e}")
@@ -90,6 +72,7 @@ if __name__ == "__main__":
     parser.add_argument("--noise_octaves", type=int, default=6, help="Noise octaves (Mandelbrot).")
     parser.add_argument("--noise_persistence", type=float, default=0.5, help="Noise persistence (Mandelbrot).")
     parser.add_argument("--noise_lacunarity", type=float, default=2.0, help="Noise lacunarity (Mandelbrot).")
+    parser.add_argument("--render_delay", type=float, default=0.0, help="Delay between frames (seconds) for cooling.")  # Added render_delay
     args = parser.parse_args()
 
-    generate_fractal_video_gpu(args.filename, args.total_frames, args.width, args.height, args.center_x, args.center_y, args.zoom_speed, args.max_iter, args.fps, args.fractal_type, args.color_map, args.noise_scale, args.noise_strength, args.noise_octaves, args.noise_persistence, args.noise_lacunarity)
+    generate_fractal_video_gpu(args.filename, args.total_frames, args.width, args.height, args.center_x, args.center_y, args.zoom_speed, args.max_iter, args.fps, args.fractal_type, args.color_map, args.noise_scale, args.noise_strength, args.noise_octaves, args.noise_persistence, args.noise_lacunarity, args.render_delay)

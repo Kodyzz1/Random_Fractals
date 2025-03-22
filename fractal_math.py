@@ -1,9 +1,7 @@
-# fractal_math.py
-
 import cupy as cp
 import noise_utils
 
-def mandelbrot_gpu(c, max_iter):
+def mandelbrot_gpu(c: cp.ndarray, max_iter: int) -> cp.ndarray:
     """
     Calculates the Mandelbrot set using GPU operations.
 
@@ -14,26 +12,18 @@ def mandelbrot_gpu(c, max_iter):
     Returns:
         cupy.ndarray: Iteration counts.
     """
-    z = cp.zeros_like(c, dtype=cp.complex128)#reset z to complex128
+    z = cp.zeros_like(c, dtype=cp.complex128)
     iterations = cp.zeros_like(c, dtype=cp.int32)
     mask = cp.ones_like(c, dtype=cp.bool_)
-    
-    print(f"z: {z}") #add this line
 
     for i in range(max_iter):
-        if i == 0:
-            print("Loop entered (first iteration)")
-        z[mask] = z[mask] * z[mask] + c[mask]
-        
-        print(f"c: {c}")
-        
+        z[mask] = z[mask] * z[mask] + c[mask]  # Corrected line
         mask[cp.abs(z) > 2] = False
         iterations[mask] = i
-        print(f"mask: {mask}")
 
     return iterations
 
-def julia_set_gpu(c, z, max_iter):
+def julia_set_gpu(c: cp.ndarray, z: cp.ndarray, max_iter: int) -> cp.ndarray:
     """
     Calculates the Julia set using GPU operations.
 
@@ -47,18 +37,15 @@ def julia_set_gpu(c, z, max_iter):
     """
     iterations = cp.zeros_like(c, dtype=cp.int32)
     mask = cp.ones_like(c, dtype=cp.bool_)
-    
-    print(f"initial z: {z}") #add this line
 
     for i in range(max_iter):
         z[mask] = z[mask] * z[mask] + c[mask]
         mask[cp.abs(z) > 2] = False
         iterations[mask] = i
-        print(f"mask: {mask}")
 
     return iterations
 
-def burning_ship_gpu(c, max_iter):
+def burning_ship_gpu(c: cp.ndarray, max_iter: int) -> cp.ndarray:
     """
     Calculates the Burning Ship fractal using GPU operations.
 
@@ -69,25 +56,20 @@ def burning_ship_gpu(c, max_iter):
     Returns:
         cupy.ndarray: Iteration counts.
     """
-    z = cp.zeros_like(c)
+    z = cp.zeros_like(c, dtype=cp.complex128)
     iterations = cp.zeros_like(c, dtype=cp.int32)
     mask = cp.ones_like(c, dtype=cp.bool_)
-    
-    
 
     for i in range(max_iter):
-        z[mask] = cp.abs(cp.real(z[mask])) + 1j * cp.abs(cp.imag(z[mask]))
-        z[mask] = z[mask] * z[mask] + c[mask]
+        z[mask] = (cp.abs(cp.real(z[mask])) + 1j * cp.abs(cp.imag(z[mask])))**2 + c[mask]  # Corrected line
         mask[cp.abs(z) > 2] = False
         iterations[mask] = i
-        print(f"mask: {mask}")
-        print(f"z: {z}")
 
     return iterations
 
-def noisy_mandelbrot_gpu(c, max_iter, noise_scale, noise_strength, noise_octaves, noise_persistence, noise_lacunarity, seed=0):
+def noisy_mandelbrot_gpu(c: cp.ndarray, max_iter: int, noise_scale: float, noise_strength: float, noise_octaves: int, noise_persistence: float, noise_lacunarity: float, seed: int = 0) -> cp.ndarray:
     """
-    Calculates the Mandelbrot set with OpenSimplex noise applied to the iteration count.
+    Calculates the Mandelbrot set with Perlin noise applied to the iteration count.
 
     Args:
         c (cupy.ndarray): Complex coordinates.
@@ -108,16 +90,11 @@ def noisy_mandelbrot_gpu(c, max_iter, noise_scale, noise_strength, noise_octaves
 
     for i in range(max_iter):
         z[mask] = z[mask] * z[mask] + c[mask]
-        print(f"z (inside loop): {z}")
         mask[cp.abs(z) > 2] = False
         iterations[mask] = i
-        print(f"mask: {mask}")
 
-    # Apply OpenSimplex noise
-    noise_values = noise_utils.generate_perlin_noise_cpu(cp.real(c), cp.imag(c), i, octaves=noise_octaves, persistence=noise_persistence, lacunarity=noise_lacunarity, scale=noise_scale, seed=seed)
 
-    # Apply noise to iterations
+    noise_values = noise_utils.generate_perlin_noise_cpu(cp.real(c), cp.imag(c), octaves=noise_octaves, persistence=noise_persistence, lacunarity=noise_lacunarity, scale=noise_scale, seed=seed)
     iterations = cp.clip(iterations + (noise_values * noise_strength).astype(cp.int32), 0, max_iter)
-    print(f"Iterations: {iterations}")
 
     return iterations
