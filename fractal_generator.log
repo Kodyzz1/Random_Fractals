@@ -1,0 +1,46 @@
+2025-03-22 04:52:58,509 - INFO - Generating fractal video: output.mp4
+2025-03-22 04:52:58,510 - INFO - Frames: 10, Width: 1920, Height: 1080, Center: (-0.5, 0.0), Zoom Speed: 0.02, Max Iterations: 200, FPS: 24, Fractal Type: mandelbrot, Color Map: grayscale, Noise Scale: 5.0, Noise Strength: 0.1, Noise Octaves: 6, Noise Persistence: 0.5, Noise Lacunarity: 2.0
+2025-03-22 04:53:14,407 - ERROR - Error in render_fractal_frame_gpu: Index 1080 is out of bounds for axis 1 with size 1080
+2025-03-22 04:53:14,408 - INFO - Frame 1/10 rendered. Estimated time remaining: 143.08 seconds
+2025-03-22 04:57:24,134 - INFO - Generating fractal video: output.mp4
+2025-03-22 04:57:24,134 - INFO - Frames: 10, Width: 800, Height: 600, Center: (-0.5, 0.0), Zoom Speed: 0.05, Max Iterations: 200, FPS: 24, Fractal Type: mandelbrot, Color Map: grayscale, Noise Scale: 5.0, Noise Strength: 0.1, Noise Octaves: 6, Noise Persistence: 0.5, Noise Lacunarity: 2.0
+2025-03-22 04:57:28,060 - ERROR - Error in render_fractal_frame_gpu: Index 600 is out of bounds for axis 1 with size 600
+2025-03-22 04:57:28,061 - INFO - Frame 1/10 rendered. Estimated time remaining: 35.33 seconds
+2025-03-22 04:57:31,894 - ERROR - Error in render_fractal_frame_gpu: Index 600 is out of bounds for axis 1 with size 600
+2025-03-22 04:57:31,894 - INFO - Frame 2/10 rendered. Estimated time remaining: 31.04 seconds
+2025-03-22 04:57:35,900 - ERROR - Error in render_fractal_frame_gpu: Index 600 is out of bounds for axis 1 with size 600
+2025-03-22 04:57:35,900 - INFO - Frame 3/10 rendered. Estimated time remaining: 27.45 seconds
+2025-03-22 04:57:39,888 - ERROR - Error in render_fractal_frame_gpu: Index 600 is out of bounds for axis 1 with size 600
+2025-03-22 04:57:39,889 - INFO - Frame 4/10 rendered. Estimated time remaining: 23.63 seconds
+2025-03-22 04:57:43,981 - ERROR - Error in render_fractal_frame_gpu: Index 600 is out of bounds for axis 1 with size 600
+2025-03-22 04:57:43,982 - INFO - Frame 5/10 rendered. Estimated time remaining: 19.85 seconds
+2025-03-22 04:57:48,179 - ERROR - Error in render_fractal_frame_gpu: Index 600 is out of bounds for axis 1 with size 600
+2025-03-22 04:57:48,180 - INFO - Frame 6/10 rendered. Estimated time remaining: 16.03 seconds
+2025-03-22 04:57:52,286 - ERROR - Error in render_fractal_frame_gpu: Index 600 is out of bounds for axis 1 with size 600
+2025-03-22 04:57:52,286 - INFO - Frame 7/10 rendered. Estimated time remaining: 12.06 seconds
+2025-03-22 04:57:56,252 - ERROR - Error in render_fractal_frame_gpu: Index 600 is out of bounds for axis 1 with size 600
+2025-03-22 04:57:56,253 - INFO - Frame 8/10 rendered. Estimated time remaining: 8.03 seconds
+2025-03-22 04:58:00,198 - ERROR - Error in render_fractal_frame_gpu: Index 600 is out of bounds for axis 1 with size 600
+2025-03-22 04:58:00,198 - INFO - Frame 9/10 rendered. Estimated time remaining: 4.01 seconds
+2025-03-22 04:58:04,255 - ERROR - Error in render_fractal_frame_gpu: Index 600 is out of bounds for axis 1 with size 600
+2025-03-22 04:58:04,256 - INFO - Frame 10/10 rendered. Estimated time remaining: 0.00 seconds
+2025-03-22 04:58:04,319 - INFO - Concatenating video frames...
+2025-03-22 04:58:04,361 - INFO - Temporary encoded frames deleted.
+2025-03-22 04:59:32,267 - INFO - Generating fractal video: output.mp4
+2025-03-22 04:59:32,267 - INFO - Frames: 10, Width: 800, Height: 600, Center: (-0.5, 0.0), Zoom Speed: 0.05, Max Iterations: 200, FPS: 24, Fractal Type: mandelbrot, Color Map: grayscale, Noise Scale: 5.0, Noise Strength: 0.1, Noise Octaves: 6, Noise Persistence: 0.5, Noise Lacunarity: 2.0
+2025-03-22 04:59:36,155 - ERROR - Error in render_fractal_frame_gpu: Index 600 is out of bounds for axis 1 with size 600
+2025-03-22 04:59:36,155 - INFO - Frame 1/10 rendered. Estimated time remaining: 34.99 seconds
+2025-03-22 05:08:13,498 - INFO - Generating fractal video: output.mp4
+2025-03-22 05:08:13,498 - INFO - Frames: 10, Width: 800, Height: 600, Center: (-0.5, 0.0), Zoom Speed: 0.05, Max Iterations: 200, FPS: 24, Fractal Type: mandelbrot, Color Map: grayscale, Noise Scale: 5.0, Noise Strength: 0.1, Noise Octaves: 6, Noise Persistence: 0.5, Noise Lacunarity: 2.0
+2025-03-22 05:08:17,941 - ERROR - Error in render_fractal_frame_gpu: Index 600 is out of bounds for axis 1 with size 600
+2025-03-22 05:08:17,941 - INFO - Frame 1/10 rendered. Estimated time remaining: 39.99 seconds
+2025-03-22 05:08:22,260 - ERROR - Error in render_fractal_frame_gpu: Index 600 is out of bounds for axis 1 with size 600
+2025-03-22 05:08:22,260 - INFO - Frame 2/10 rendered. Estimated time remaining: 35.05 seconds
+2025-03-22 05:08:26,742 - ERROR - Error in render_fractal_frame_gpu: Index 600 is out of bounds for axis 1 with size 600
+2025-03-22 05:08:26,743 - INFO - Frame 3/10 rendered. Estimated time remaining: 30.90 seconds
+2025-03-22 05:08:52,526 - INFO - Generating fractal video: output.mp4
+2025-03-22 05:08:52,526 - INFO - Frames: 1, Width: 800, Height: 600, Center: (-0.5, 0.0), Zoom Speed: 0.05, Max Iterations: 200, FPS: 24, Fractal Type: mandelbrot, Color Map: grayscale, Noise Scale: 5.0, Noise Strength: 0.1, Noise Octaves: 6, Noise Persistence: 0.5, Noise Lacunarity: 2.0
+2025-03-22 05:08:56,928 - ERROR - Error in render_fractal_frame_gpu: Index 600 is out of bounds for axis 1 with size 600
+2025-03-22 05:08:56,929 - INFO - Frame 1/1 rendered. Estimated time remaining: 0.00 seconds
+2025-03-22 05:08:56,992 - INFO - Concatenating video frames...
+2025-03-22 05:08:57,026 - INFO - Temporary encoded frames deleted.
