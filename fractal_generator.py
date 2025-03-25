@@ -6,9 +6,8 @@ import logging
 import os
 import cupy as cp
 import random
-# import shutil # Removed unused import
 import numpy as np
-import matplotlib.pyplot as plt  # Only needed for path_finder.py
+import matplotlib.pyplot as plt
 from scipy.ndimage import uniform_filter
 
 
@@ -288,14 +287,12 @@ def generate_fractal_video_gpu(filename, path_file, width, height, max_iter, fps
             prev_target_x = target_x  # Update previous target
             prev_target_y = target_y
 
-        # --- FFmpeg call should be HERE, AFTER the loop finishes ---
         print("\nFrame generation complete. Starting FFmpeg...")
         input_pattern = os.path.join(current_dir, 'frame_%04d.png')
         output_file = filename
         ffmpeg_executable = r"C:\Program Files\ffmpeg\bin\ffmpeg.exe"
         fps_str = str(fps)
 
-        # --- ADD THIS LINE: ---
         time.sleep(1)  # Wait for 1 second to ensure files are written
 
         ffmpeg_command = [
