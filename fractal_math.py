@@ -1,4 +1,5 @@
 import cupy as cp
+import numpy as np
 from cupyx.scipy.ndimage import convolve  # More specific import
 import noise_utils
 
@@ -70,10 +71,10 @@ def burning_ship_gpu(c: cp.ndarray, max_iter: int) -> cp.ndarray:
     mask = cp.ones_like(c, dtype=cp.bool_)
 
     for i in range(max_iter):
-         z[mask] = (cp.abs(cp.real(z[mask])) + 1j * cp.abs(cp.imag(z[mask])))**2 + c[mask]
-         mask[cp.abs(z) > 2] = False
-         iterations[mask] = i
-         if cp.any(cp.isnan(z)) or cp.any(cp.isinf(z)):
+        z[mask] = (cp.abs(cp.real(z[mask])) + 1j * cp.abs(cp.imag(z[mask])))**2 + c[mask]
+        mask[cp.abs(z) > 2] = False
+        iterations[mask] = i
+        if cp.any(cp.isnan(z)) or cp.any(cp.isinf(z)):
             logging.warning("NaN or inf detected in burning ship calculation!")
             break
 
@@ -140,3 +141,37 @@ def local_variance(iterations: cp.ndarray, window_size: int = 3) -> cp.ndarray:
     # Calculate the variance (E[X^2] - (E[X])^2).
     variance = mean_of_squares - mean * mean
     return variance
+
+# --- CPU Versions (using NumPy) ---
+
+def mandelbrot(c, max_iter):
+    """Calculates the Mandelbrot set (CPU version)."""
+    z = np.zeros(c.shape, dtype=np.complex128)
+    iterations = np.zeros(c.shape, dtype=int)
+    for i in range(max_iter):
+        z = z*z + c
+        mask = (np.abs(z) < 2) & (iterations == 0)
+        iterations[mask] = i + 1
+        z[~mask] = 2
+    return iterations
+
+def julia_set(c_val, z, max_iter):
+    """Calculates the Julia set (CPU version)."""
+    iterations = np.zeros(z.shape, dtype=int)
+    for i in range(max_iter):
+        z = z * z + c_val
+        mask = (np.abs(z) < 2) & (iterations == 0)
+        iterations[mask] = i + 1
+        z[~mask] = 2
+    return iterations
+
+def burning_ship(c, max_iter):
+    """Calculates the Burning Ship fractal (CPU version)."""
+    z = np.zeros(c.shape, dtype=np.complex128)
+    iterations = np.zeros(c.shape, dtype=int)
+    for i in range(max_iter):
+        z = (np.abs(z.real) + 1j * np.abs(z.imag))**2 + c
+        mask = (np.abs(z) < 2) & (iterations == 0)
+        iterations[mask] = i + 1
+        z[~mask] = 2
+    return iterations

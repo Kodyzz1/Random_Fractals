@@ -1,27 +1,14 @@
 import cupy as cp
-import imageio.v3 as iio  # Use imageio v3 API
+import imageio.v3 as iio
 import fractal_math
 import logging
+import os
+import matplotlib.cm as cm
+import numpy as np
 
 def render_fractal_frame_to_png(filename: str, width: int, height: int, center_x: float, center_y: float, zoom: float, max_iter: int, fractal_type: str, color_map: str, noise_scale: float, noise_strength: float, noise_octaves: int, noise_persistence: float, noise_lacunarity: float):
     """
-    Renders a fractal frame and saves it as a PNG file.
-
-    Args:
-        filename (str): Output PNG filename.
-        width (int): Frame width.
-        height (int): Frame height.
-        center_x (float): Center X coordinate.
-        center_y (float): Center Y coordinate.
-        zoom (float): Zoom factor.
-        max_iter (int): Maximum iterations.
-        fractal_type (str): Fractal type ("mandelbrot", "julia", "burning_ship").
-        color_map (str): Color mapping function ("grayscale", "rainbow").
-        noise_scale (float): Scale of the Perlin noise (for Mandelbrot).
-        noise_strength (float): Strength of the noise effect (for Mandelbrot).
-        noise_octaves (int): Octaves of noise (for Mandelbrot).
-        noise_persistence (float): Persistence of noise (for Mandelbrot).
-        noise_lacunarity (float): Lacunarity of noise (for Mandelbrot).
+    Renders a fractal frame and saves it as a PNG file, with colormaps.
     """
     x_coords = cp.linspace(-1, 1, width) * zoom + center_x
     y_coords = cp.linspace(-1, 1, height) * zoom + center_y
@@ -31,25 +18,39 @@ def render_fractal_frame_to_png(filename: str, width: int, height: int, center_x
         iterations = fractal_math.noisy_mandelbrot_gpu(c, max_iter, noise_scale, noise_strength, noise_octaves, noise_persistence, noise_lacunarity)
     elif fractal_type == "julia":
         z = c
-        iterations = fractal_math.julia_set_gpu(c, z, max_iter)
+        iterations = fractal_math.julia_set_gpu(fractal_math.DEFAULT_JULIA_C, z, max_iter)
     elif fractal_type == "burning_ship":
         iterations = fractal_math.burning_ship_gpu(c, max_iter)
     else:
         raise ValueError(f"Invalid fractal type: {fractal_type}")
 
-    if color_map == "grayscale":
-       colors = (iterations % 256).astype(cp.uint8)
-    elif color_map == "rainbow":
-       colors = (iterations * 10 % 256).astype(cp.uint8) #example rainbow color map
-    else:
-       raise ValueError(f"Invalid color map: {color_map}")
+    # --- Colormap Application ---
+    # Normalize iteration counts (logarithmic scale for better distribution)
+    iterations = cp.asnumpy(iterations)  # Convert to NumPy for matplotlib
+    #avoid log 0 errors
+    zero_mask = iterations == 0
+    iterations = np.log(iterations + 1)  # Add 1 to avoid log(0)
+    normalized_iterations = iterations / np.log(max_iter + 1)
 
 
-    image_array = cp.stack([colors, colors, colors], axis=-1)  # Create RGB image
-    image_array_cpu = cp.asnumpy(image_array)
-    iio.imwrite(filename, image_array_cpu)
+    # Apply the chosen colormap
+    cmap = cm.get_cmap(color_map)  # Get the colormap by name
+    colors = cmap(normalized_iterations)  # Get RGBA values
 
-    del image_array  # Explicitly delete to free GPU memory
-    del colors
-    del iterations
-    del c
+    # Convert to uint8 and remove alpha channel (we only need RGB)
+    colors = (colors[:, :, :3] * 255).astype(np.uint8)  # Remove alpha and scale
+
+    colors[zero_mask] = [0, 0, 0] #set zero iterations to black.
+
+    image_array = colors
+    try:
+        iio.imwrite(filename, image_array)
+    except Exception as e:
+        logging.error(f"Error writing PNG file {filename}: {e}")
+        print(f"Error writing PNG file {filename}: {e}")
+        raise  # Re-raise the exception to stop execution
+    finally:
+        del image_array
+        del colors
+        del iterations
+        del c
