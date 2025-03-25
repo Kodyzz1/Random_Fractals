@@ -1,7 +1,5 @@
-2025-03-24 20:35:16,619 - INFO - Generating single fractal image: frac.png
-2025-03-24 20:35:16,621 - INFO - Rendering single frame with Zoom: 0.005, Center: (-0.745, 0.112)
-2025-03-24 20:38:49,641 - INFO - Generating single fractal image: fractal.png
-2025-03-24 20:38:49,642 - INFO - Rendering single frame with Zoom: 0.005, Center: (-0.745, 0.112)
-2025-03-24 20:45:05,395 - INFO - Generating single fractal image: Fractal.png
-2025-03-24 20:45:43,563 - INFO - Generating single fractal image: Fractal.png
-2025-03-24 20:45:43,564 - INFO - Rendering single frame with Zoom: 0.005, Center: (-0.745, 0.112)
+2025-03-24 21:32:05,230 - INFO - Generating single fractal image: julia.png
+2025-03-24 21:32:05,247 - INFO - Rendering single frame with Zoom: 0.005, Center: (-0.745, 0.112)
+2025-03-24 21:32:05,383 - ERROR - Error generating single image: 'complex' object is not subscriptable
+2025-03-24 21:50:30,296 - INFO - Generating single fractal image: julia.png
+2025-03-24 21:50:30,298 - INFO - Rendering single frame with Zoom: 0.005, Center: (-0.745, 0.112)

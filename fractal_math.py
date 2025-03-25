@@ -2,6 +2,7 @@ import cupy as cp
 import numpy as np
 from cupyx.scipy.ndimage import convolve  # More specific import
 import noise_utils
+import logging
 
 DEFAULT_JULIA_C = -0.8 + 0.156j  # Good default Julia constant
 
@@ -46,7 +47,7 @@ def julia_set_gpu(c: cp.ndarray, z: cp.ndarray, max_iter: int) -> cp.ndarray:
     mask = cp.ones_like(z, dtype=cp.bool_)
 
     for i in range(max_iter):
-        z[mask] = z[mask] * z[mask] + c[mask]
+        z[mask] = z[mask] * z[mask] + c
         mask[cp.abs(z) > 2] = False
         iterations[mask] = i
         if cp.any(cp.isnan(z)) or cp.any(cp.isinf(z)):
